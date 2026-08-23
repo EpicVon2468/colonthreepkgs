@@ -1,0 +1,14 @@
+diff --git a/lld/ELF/Driver.cpp b/lld/ELF/Driver.cpp
+index 0393410b35d4..d92bafd451d5 100644
+--- a/lld/ELF/Driver.cpp
++++ b/lld/ELF/Driver.cpp
+@@ -1916,8 +1916,7 @@ static void readConfigs(Ctx &ctx, opt::InputArgList &args) {
+            "intend to set the base address";
+
+   // Parse ELF{32,64}{LE,BE} and CPU type.
+-  if (auto *arg = args.getLastArg(OPT_m)) {
+-    StringRef s = arg->getValue();
++  if (auto s = args.getLastArgValue(OPT_m, getenv("LDEMULATION")); s.data()) {
+     std::tie(ctx.arg.ekind, ctx.arg.emachine, ctx.arg.osabi) =
+         parseEmulation(ctx, s);
+     ctx.arg.mipsN32Abi =
