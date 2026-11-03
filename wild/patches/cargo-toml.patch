@@ -1,0 +1,71 @@
+diff --git a/Cargo.toml b/Cargo.toml
+index 8a71381..2b62888 100644
+--- a/Cargo.toml
++++ b/Cargo.toml
+@@ -64,7 +64,8 @@ hashbrown = { version = "0.17.1", default-features = false, features = [
+   "inline-more",
+ ] }
+ hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
+-iced-x86 = { version = "1.17.0", default-features = false, features = [
++# Critically out-of-date.
++iced-x86 = { git = "https://github.com/icedland/iced", rev = "8cfc5f57c08fd2e80a4cec9d3d9d36f642b2de31", default-features = false, features = [
+   "std",
+   "decoder",
+   "gas",
+@@ -77,15 +78,15 @@ itanium-demangle = { version = "0.1.0", default-features = false }
+ itertools = { version = "0.15.0", default-features = false, features = [
+   "use_std",
+ ] }
+-jobserver = { version = "0.1.30", default-features = false }
++jobserver = { version = "0.1.35", default-features = false }
+ leb128 = { version = "0.2.7", default-features = false }
+-libc = { version = "0.2.180", default-features = false }
++libc = { version = "0.2.191", default-features = false }
+ libloading = { version = "0.9.0", default-features = false, features = ["std"] }
+ libtest-mimic = { version = "0.8.2", default-features = false }
+-memchr = { version = "2.7.0", default-features = false }
++memchr = { version = "2.8.3", default-features = false }
+ memmap2 = { version = "0.9.0", default-features = false }
+ mimalloc = { version = "0.1", default-features = false }
+-nix = { version = "0.31.1", default-features = false, features = [
++nix = { version = "0.31.3", default-features = false, features = [
+   "feature",
+   "resource",
+   "fs",
+@@ -101,7 +102,7 @@ object = { version = "0.40.0", default-features = false, features = [
+   "archive",
+   "names",
+ ] }
+-os_info = { version = "3.1.0", default-features = false }
++os_info = { version = "3.15.0", default-features = false }
+ paste = { version = "1.0.15", default-features = false }
+ # 0.4.9 contains breaking changes.
+ perf-event = { version = "=0.4.8", default-features = false }
+@@ -119,7 +120,7 @@ serde-keyvalue = { version = "0.1.0", default-features = false }
+ sha2 = { version = "0.11.0", default-features = false }
+ sharded-offset-map = { version = "0.3.1", default-features = false }
+ sharded-vec-writer = { version = "0.4.0", default-features = false }
+-smallvec = { version = "1.6.1", default-features = false }
++smallvec = { version = "1.16.3", default-features = false }
+ strum = { version = "0.28.0", default-features = false, features = ["derive"] }
+ symbolic-common = { version = "13.0.0", default-features = false }
+ symbolic-demangle = { version = "13.0.0", default-features = false, features = [
+@@ -164,6 +165,9 @@ zstd = { version = "0.14.0", default-features = false }
+ 
+ [profile.release]
+ codegen-units = 1
++opt-level = 3
++lto = "fat"
++strip = true
+ 
+ [profile.release-debug]
+ inherits = "release"
+@@ -193,7 +197,7 @@ debug = 0
+ 
+ [workspace.lints.rust]
+ ffi_unwind_calls = "warn"
+-# We sometimes supress lints that are only on nightly, but don't want to see warnings about these 
++# We sometimes supress lints that are only on nightly, but don't want to see warnings about these
+ # supressions on stable.
+ unknown_lints = "allow"
+ 
