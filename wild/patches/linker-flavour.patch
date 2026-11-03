@@ -1,0 +1,47 @@
+diff --git a/libwild/src/args.rs b/libwild/src/args.rs
+index ef9e9dc..62dad00 100644
+--- a/libwild/src/args.rs
++++ b/libwild/src/args.rs
+@@ -137,12 +137,15 @@ impl Args {
+ 
+         let mut has_flavor = false;
+ 
+-        let platform = if input.next().is_some_and(|arg| arg.as_ref() == "-flavor") {
++        let platform = if input
++            .next()
++            .is_some_and(|arg| matches!(arg.as_ref(), "-flavor" | "-flavour"))
++        {
+             has_flavor = true;
+ 
+             let flavor = input
+                 .next()
+-                .context("-flavor requires an argument (gnu, darwin, or link)")?;
++                .context("-flavor requires an argument (gnu, darwin, link, or wasm)")?;
+ 
+             PlatformKind::from_flavor(flavor.as_ref())?
+         } else if let Some(platform) = PlatformKind::from_executable_name(prog_name.as_ref()) {
+@@ -271,10 +274,7 @@ impl PlatformKind {
+             "darwin" | "ld64" => Ok(PlatformKind::MachO),
+             "link" => Ok(PlatformKind::Coff),
+             "wasm" | "ld-wasm" => Ok(PlatformKind::Wasm),
+-            _ => bail!(
+-                "Unknown flavor '{}'. Valid flavors: gnu, darwin, link",
+-                flavor
+-            ),
++            _ => bail!("Unknown flavor '{flavor}'. Valid flavors: gnu, darwin, link, wasm"),
+         }
+     }
+ 
+@@ -288,9 +288,9 @@ impl PlatformKind {
+         }
+ 
+         match base_name {
+-            "ld" => Some(PlatformKind::Elf),
+-            "ld64" => Some(PlatformKind::MachO),
+-            "ld-wasm" | "wasm-ld" => Some(PlatformKind::Wasm),
++            "ld" | "ld.wild" => Some(PlatformKind::Elf),
++            "ld64" | "ld64.wild" => Some(PlatformKind::MachO),
++            "ld-wasm" | "wasm-ld" | "ld-wasm.wild" | "wasm-ld.wild" => Some(PlatformKind::Wasm),
+             _ => None,
+         }
+     }
