@@ -1,0 +1,90 @@
+diff --git a/grammar.js b/grammar.js
+index 4a0ff4b..0f85748 100644
+--- a/grammar.js
++++ b/grammar.js
+@@ -242,7 +242,7 @@ module.exports = grammar({
+       '\'',
+       'as', 'async', 'await', 'break', 'const', 'continue', 'default', 'enum', 'fn', 'for', 'gen',
+       'if', 'impl', 'let', 'loop', 'match', 'mod', 'pub', 'return', 'static', 'struct', 'trait',
+-      'type', 'union', 'unsafe', 'use', 'where', 'while',
++      'type', 'union', 'safe', 'unsafe', 'use', 'where', 'while',
+     ),
+ 
+     // Section - Declarations
+@@ -406,6 +406,7 @@ module.exports = grammar({
+ 
+     static_item: $ => seq(
+       optional($.visibility_modifier),
++      optional('safe'),
+       'static',
+ 
+       // Not actual rust syntax, but made popular by the lazy_static crate.
+@@ -462,7 +463,10 @@ module.exports = grammar({
+       'async',
+       'default',
+       'const',
+-      'unsafe',
++      choice(
++        'safe',
++        'unsafe',
++      ),
+       $.extern_modifier,
+     )),
+ 
+@@ -490,7 +494,8 @@ module.exports = grammar({
+       field('bounds', $.trait_bounds),
+     ),
+ 
+-    impl_item: $ => seq(
++    impl_item: $ => prec(1, seq(
++      optional('const'),
+       optional('unsafe'),
+       'impl',
+       field('type_parameters', optional($.type_parameters)),
+@@ -506,10 +511,19 @@ module.exports = grammar({
+       field('type', $._type),
+       optional($.where_clause),
+       choice(field('body', $.declaration_list), ';'),
+-    ),
++    )),
+ 
+-    trait_item: $ => seq(
++    trait_item: $ => prec(1, seq(
+       optional($.visibility_modifier),
++      optional(
++        seq(
++          'impl',
++          '(',
++          $.self,
++          ')',
++        ),
++      ),
++      optional('const'),
+       optional('unsafe'),
+       'trait',
+       field('name', $._type_identifier),
+@@ -517,7 +531,7 @@ module.exports = grammar({
+       field('bounds', optional($.trait_bounds)),
+       optional($.where_clause),
+       field('body', $.declaration_list),
+-    ),
++    )),
+ 
+     associated_type: $ => seq(
+       'type',
+@@ -531,7 +545,14 @@ module.exports = grammar({
+     trait_bounds: $ => seq(
+       ':',
+       sepBy1('+', choice(
+-        $._type,
++        seq(
++          optional(seq(
++            '[',
++            'const',
++            ']',
++          )),
++          $._type,
++        ),
+         $.lifetime,
+         $.higher_ranked_trait_bound,
+       )),
