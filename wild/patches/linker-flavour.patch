@@ -1,8 +1,8 @@
 diff --git a/libwild/src/args.rs b/libwild/src/args.rs
-index ef9e9dc..62dad00 100644
+index b9507b7..9c84f31 100644
 --- a/libwild/src/args.rs
 +++ b/libwild/src/args.rs
-@@ -137,12 +137,15 @@ impl Args {
+@@ -133,7 +133,10 @@ impl Args {
  
          let mut has_flavor = false;
  
@@ -14,25 +14,7 @@ index ef9e9dc..62dad00 100644
              has_flavor = true;
  
              let flavor = input
-                 .next()
--                .context("-flavor requires an argument (gnu, darwin, or link)")?;
-+                .context("-flavor requires an argument (gnu, darwin, link, or wasm)")?;
- 
-             PlatformKind::from_flavor(flavor.as_ref())?
-         } else if let Some(platform) = PlatformKind::from_executable_name(prog_name.as_ref()) {
-@@ -271,10 +274,7 @@ impl PlatformKind {
-             "darwin" | "ld64" => Ok(PlatformKind::MachO),
-             "link" => Ok(PlatformKind::Coff),
-             "wasm" | "ld-wasm" => Ok(PlatformKind::Wasm),
--            _ => bail!(
--                "Unknown flavor '{}'. Valid flavors: gnu, darwin, link",
--                flavor
--            ),
-+            _ => bail!("Unknown flavor '{flavor}'. Valid flavors: gnu, darwin, link, wasm"),
-         }
-     }
- 
-@@ -288,9 +288,9 @@ impl PlatformKind {
+@@ -282,9 +285,9 @@ impl PlatformKind {
          }
  
          match base_name {
@@ -45,3 +27,12 @@ index ef9e9dc..62dad00 100644
              _ => None,
          }
      }
+@@ -409,7 +412,7 @@ impl CommonArgs {
+     pub(crate) fn report_unrecognized(&self) -> Result {
+         if !self.unrecognized_options.is_empty() {
+             let options_list = self.unrecognized_options.join(", ");
+-            bail!("unrecognized option(s): {}", options_list);
++            bail!("unrecognised option(s): {options_list}");
+         }
+ 
+         Ok(())
